@@ -17,9 +17,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Empty } from "@/components/empty";
+import { Loader } from "@/components/loder";
+import { UserAvatar } from "@/components/user-avatar";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChatCompletionRequestMessage } from "openai";
+import { cn } from "@/lib/utils";
+import { BotAvtar } from "@/components/bot-avtar";
 
 const ConversationPage = () => {
     const router = useRouter();
@@ -43,7 +49,7 @@ const ConversationPage = () => {
             const newMessage = [...messages, userMessage];
 
             const response = await axios.post("/api/conversation", {
-                messages:newMessage,
+                messages: newMessage,
             });
 
             setMessages((current) => [...current, userMessage, response.data]);
@@ -105,15 +111,26 @@ const ConversationPage = () => {
                     </Form>
                 </div>
                 <div className="space-y-4 mt-4">
-                    {messages.length === 0 && !isLoading && (
-                        <div>
-                            Empty!
+                    {isLoading && (
+                        <div className="p-8 rounded-lg w-full flex items-center justify-center bg-muted">
+                            <Loader />
                         </div>
+                    )}
+                    {messages.length === 0 && !isLoading && (
+                        <Empty label="No conversation started." />
                     )}
                     <div className="flex flex-col-reverse gap-y-4">
                         {messages.map((message) => (
-                            <div key={message.content}>
-                                {message.content}
+                            <div key={message.content}
+                                className={cn(
+                                    "p-8 w-full items-start gap-x-8 rounded-lg",
+                                    message.role === "user" ? "bg-white border border-black/10" : "bg-muted"
+                                )}
+                            >
+                                {message.role === "user" ? <UserAvatar /> : <BotAvtar />}
+                                <p className="text-sm">
+                                    {message.content}
+                                </p>
                             </div>
                         ))}
                     </div>
