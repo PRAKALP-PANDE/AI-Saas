@@ -205,7 +205,6 @@ const ImagePage = () => {
                                 </CardFooter>
                             </Card>
                         ))}
-                        Images will be rendered here.
                     </div>
                 </div>
             </div>
